@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Audio Reader - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <h1>📄🔊</h1>
+                <h2>PDF to Audio Reader</h2>
+            </div>
+            
+            <div class="content-section">
+                <h3>Let's Get Started</h3>
+                <p>Convert your PDF documents to natural-sounding audio in multiple languages</p>
+                
+                <button class="get-started-btn" onclick="redirectToHome()">
+                    Let's Get Started
+                </button>
+            </div>
+            
+            <div class="features-section">
+                <div class="feature">
+                    <span class="feature-icon">📁</span>
+                    <span>PDF Upload</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🌍</span>
+                    <span>Multilingual</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🎤</span>
+                    <span>Voice Selection</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⬇️</span>
+                    <span>Download MP3</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function redirectToHome() {
+            window.location.href = '/home';
+        }
+    </script>
+</body>
+</html>

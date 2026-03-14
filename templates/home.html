@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Audio Reader - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📄🔊 PDF to Audio Reader</h1>
+                <p>Convert PDF documents to natural audio in multiple languages</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="section-card">
+                    <h2>📄 Upload PDF</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="pdfFile" accept=".pdf" hidden>
+                        <div class="upload-content">
+                            <span class="upload-icon">📁</span>
+                            <p>Drag and drop your PDF file here</p>
+                            <p class="upload-sub-text">or click to select file</p>
+                        </div>
+                    </div>
+                    
+                    <div class="language-select">
+                        <label for="inputLanguage">PDF Language:</label>
+                        <select id="inputLanguage">
+                            <option value="Tamil">Tamil</option>
+                            <option value="English" selected>English</option>
+                            <option value="Malayalam">Malayalam</option>
+                            <option value="Hindi">Hindi</option>
+                        </select>
+                    </div>
+
+                    <button class="upload-btn" onclick="document.getElementById('pdfFile').click()">
+                        Choose PDF File
+                    </button>
+                </div>
+            </section>
+
+            <!-- Text Preview Section (shown after upload) -->
+            <section class="text-preview-section" id="textPreviewSection" style="display:none;">
+                <div class="section-card">
+                    <h2>📝 Text Preview</h2>
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" onclick="setViewMode('original')">📄 Original Text</button>
+                        <button class="toggle-btn" onclick="setViewMode('dual')">📋 Dual Language</button>
+                    </div>
+                    
+                    <!-- Original View -->
+                    <div id="originalView" class="view-content active">
+                        <div class="text-preview" id="textPreview"></div>
+                    </div>
+                    
+                    <!-- Dual Language View -->
+                    <div id="dualView" class="view-content">
+                        <div class="dual-columns">
+                            <div class="column original-column">
+                                <h4>Original Text</h4>
+                                <div class="text-preview" id="originalDualText"></div>
+                            </div>
+                            <div class="column translated-column">
+                                <h4>Translated Text</h4>
+                                <div class="text-preview" id="translatedDualText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conversion Section (shown after upload) -->
+            <section class="conversion-section" id="conversionSection" style="display:none;">
+                <div class="section-card">
+                    <h2>🌍 Language & Voice Settings</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="targetLanguage">Convert To:</label>
+                            <select id="targetLanguage">
+                                <option value="English">English</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Malayalam">Malayalam</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="voiceGender">Voice Selection:</label>
+                            <select id="voiceGender">
+                                <option value="Female">🎤 Female Voice</option>
+                                <option value="Male">🎙️ Male Voice</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="convert-btn" id="convertBtn" onclick="translateAndShowPreview()">
+                        👁️ Preview Translation
+                    </button>
+                </div>
+            </section>
+
+            <!-- Translation Preview Section (shown after translation) -->
+            <section class="translation-preview-section" id="translationPreviewSection" style="display:none;">
+                <div class="section-card">
+                    <h2>📋 Original vs Translated Text</h2>
+                    <div class="text-comparison">
+                        <div class="text-column original-column">
+                            <h3>Original Text</h3>
+                            <div class="text-content" id="originalText"></div>
+                        </div>
+                        <div class="text-column translated-column">
+                            <h3>Translated Text</h3>
+                            <div class="text-content" id="translatedText"></div>
+                        </div>
+                    </div>
+                    <button class="convert-btn" onclick="generateAudio()">
+                        🎤 Generate Audio
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading Indicator -->
+            <div class="loading-spinner" id="loadingSpinner" style="display:none;">
+                <div class="spinner"></div>
+                <p id="loadingText">Processing your request...</p>
+            </div>
+
+            <!-- Generated Audio Section -->
+            <section class="audio-section" id="audioSection" style="display:none;">
+                <div class="section-card">
+                    <h2>🎵 Audio Player</h2>
+                    
+                    <div class="audio-info">
+                        <p><strong>Language:</strong> <span id="audioLanguage"></span></p>
+                        <p><strong>Voice:</strong> <span id="audioVoice"></span></p>
+                    </div>
+
+                    <div class="audio-player-wrapper">
+                        <div class="audio-player">
+                            <audio id="audioPlayer">
+                                <source id="audioSource" src="" type="audio/mpeg">
+                            </audio>
+                            
+                            <div class="player-controls-top">
+                                <button class="play-btn" id="playBtn" onclick="togglePlayPause()">▶️</button>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="progressBar">
+                                        <div class="progress-fill" id="progressFill"></div>
+                                    </div>
+                                </div>
+                                <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+                            </div>
+
+                            <div class="player-controls-bottom">
+                                <div class="volume-control">
+                                    <button class="control-icon" onclick="toggleMute()">🔊</button>
+                                    <input type="range" id="volumeSlider" min="0" max="100" value="70" class="volume-slider">
+                                </div>
+                                
+                                <div class="speed-control">
+                                    <label for="speedSelect">Speed:</label>
+                                    <select id="speedSelect" onchange="changePlaybackSpeed()">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="0.75">0.75x</option>
+                                        <option value="1" selected>1x</option>
+                                        <option value="1.25">1.25x</option>
+                                        <option value="1.5">1.5x</option>
+                                        <option value="2">2x</option>
+                                    </select>
+                                </div>
+
+                                <button class="download-btn" onclick="downloadAudio()">
+                                    ⬇️ Download MP3
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="reset-btn" onclick="resetApp()">
+                        🔄 Convert Another PDF
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 PDF to Audio Reader. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>
